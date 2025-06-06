@@ -156,36 +156,36 @@ export default class LegendControl implements IControl {
   private _collapseButton(key: string | RegExp, pane: HTMLDetailsElement) {
     let { collapsed = this._options.collapsed } =
       this._options.layers?.get(key) || {};
-    
+
     // Initialize with current pane state
-    const isOpen = pane.hasAttribute('open');
+    const isOpen = pane.hasAttribute("open");
     collapsed = !isOpen;
-    
+
     const button = createElement("div", {
       classes: ["collapse", `collapse--${collapsed}`],
     });
-    
+
     // Update button when clicked
     button.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      
+
       // Toggle the details element
-      pane.toggleAttribute('open');
-      
+      pane.toggleAttribute("open");
+
       // Update button state based on pane's open state
-      collapsed = !pane.hasAttribute('open');
+      collapsed = !pane.hasAttribute("open");
       button.classList.remove(`collapse--${!collapsed}`);
       button.classList.add(`collapse--${collapsed}`);
     });
-    
+
     // Listen to details open/close to keep button state in sync
-    pane.addEventListener('toggle', () => {
-      collapsed = !pane.hasAttribute('open');
+    pane.addEventListener("toggle", () => {
+      collapsed = !pane.hasAttribute("open");
       button.classList.remove(`collapse--${!collapsed}`);
       button.classList.add(`collapse--${collapsed}`);
     });
-    
+
     return button;
   }
 
@@ -249,19 +249,41 @@ export default class LegendControl implements IControl {
             createElement("summary", {
               content: [
                 metadata?.name || id,
-                layerIds && createElement('div', { classes: ['collapse-placeholder'] }), // Placeholder for collapse button
-                layerIds && this._toggleButton(layerIds, key),
+                layerIds &&
+                  createElement("div", {
+                    classes: ["controls-container"],
+                    styles: {
+                      display: "flex",
+                      gap: "4px",
+                      alignItems: "center",
+                    },
+                    content: [
+                      createElement("div", {
+                        classes: ["collapse-placeholder"],
+                      }), // Placeholder for collapse button
+                      this._toggleButton(layerIds, key),
+                    ],
+                  }),
               ],
             }),
             ...paneBlocks,
           ],
         }) as HTMLDetailsElement;
-        
+
         // Add collapse button after pane is created (so we can pass it as a parameter)
         if (layerIds) {
-          const summary = pane.querySelector('summary');
-          if (summary && summary.childNodes[1]) {
-            summary.replaceChild(this._collapseButton(key, pane), summary.childNodes[1]);
+          const summary = pane.querySelector("summary");
+          const controlsContainer = summary?.querySelector(
+            ".controls-container"
+          );
+          const placeholder = controlsContainer?.querySelector(
+            ".collapse-placeholder"
+          );
+          if (controlsContainer && placeholder) {
+            controlsContainer.replaceChild(
+              this._collapseButton(key, pane),
+              placeholder
+            );
           }
         }
         if (prevPane) this._panes.replaceChild(pane, prevPane);

@@ -153,16 +153,11 @@ export default class LegendControl implements IControl {
     return button;
   }
 
-  private _collapseButton(key: string | RegExp, pane: HTMLDetailsElement) {
-    let { collapsed = this._options.collapsed } =
-      this._options.layers?.get(key) || {};
-
+  private _collapseButton(pane: HTMLDetailsElement) {
     // Initialize with current pane state
     const isOpen = pane.hasAttribute("open");
-    collapsed = !isOpen;
-
     const button = createElement("div", {
-      classes: ["collapse", `collapse--${collapsed}`],
+      classes: ["collapse", `collapse--${!isOpen}`],
     });
 
     // Update button when clicked
@@ -172,16 +167,15 @@ export default class LegendControl implements IControl {
 
       // Toggle the details element
       pane.toggleAttribute("open");
-
       // Update button state based on pane's open state
-      collapsed = !pane.hasAttribute("open");
+      const collapsed = !pane.hasAttribute("open");
       button.classList.remove(`collapse--${!collapsed}`);
       button.classList.add(`collapse--${collapsed}`);
     });
 
     // Listen to details open/close to keep button state in sync
     pane.addEventListener("toggle", () => {
-      collapsed = !pane.hasAttribute("open");
+      const collapsed = !pane.hasAttribute("open");
       button.classList.remove(`collapse--${!collapsed}`);
       button.classList.add(`collapse--${collapsed}`);
     });
@@ -281,7 +275,7 @@ export default class LegendControl implements IControl {
           );
           if (controlsContainer && placeholder) {
             controlsContainer.replaceChild(
-              this._collapseButton(key, pane),
+              this._collapseButton(pane),
               placeholder
             );
           }

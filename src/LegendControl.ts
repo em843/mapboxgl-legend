@@ -243,21 +243,20 @@ export default class LegendControl implements IControl {
             createElement("summary", {
               content: [
                 metadata?.name || id,
-                layerIds &&
-                  createElement("div", {
-                    classes: ["controls-container"],
-                    styles: {
-                      display: "flex",
-                      gap: "4px",
-                      alignItems: "center",
-                    },
-                    content: [
-                      createElement("div", {
-                        classes: ["collapse-placeholder"],
-                      }), // Placeholder for collapse button
-                      this._toggleButton(layerIds, key),
-                    ],
-                  }),
+                createElement("div", {
+                  classes: ["controls-container"],
+                  styles: {
+                    display: "flex",
+                    gap: "4px",
+                    alignItems: "center",
+                  },
+                  content: [
+                    createElement("div", {
+                      classes: ["collapse-placeholder"],
+                    }), // Placeholder for collapse button
+                    layerIds ? this._toggleButton(layerIds, key) : undefined,
+                  ].filter(Boolean),
+                }),
               ],
             }),
             ...paneBlocks,
@@ -265,20 +264,16 @@ export default class LegendControl implements IControl {
         }) as HTMLDetailsElement;
 
         // Add collapse button after pane is created (so we can pass it as a parameter)
-        if (layerIds) {
-          const summary = pane.querySelector("summary");
-          const controlsContainer = summary?.querySelector(
-            ".controls-container"
+        const summary = pane.querySelector("summary");
+        const controlsContainer = summary?.querySelector(".controls-container");
+        const placeholder = controlsContainer?.querySelector(
+          ".collapse-placeholder"
+        );
+        if (controlsContainer && placeholder) {
+          controlsContainer.replaceChild(
+            this._collapseButton(pane),
+            placeholder
           );
-          const placeholder = controlsContainer?.querySelector(
-            ".collapse-placeholder"
-          );
-          if (controlsContainer && placeholder) {
-            controlsContainer.replaceChild(
-              this._collapseButton(pane),
-              placeholder
-            );
-          }
         }
         if (prevPane) this._panes.replaceChild(pane, prevPane);
         else this._panes.appendChild(pane);

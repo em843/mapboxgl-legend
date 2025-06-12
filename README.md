@@ -1,3 +1,6 @@
+# Updates
+I forked this repository to add a chevron arrow to each layer so it is more obvious you can collapse layers in the legend.
+
 # mapboxgl-legend
 
 [![NPM](https://img.shields.io/npm/v/mapboxgl-legend)](https://npmjs.org/package/mapboxgl-legend)
